@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equation Solver</title>
+    <style>
+        canvas { border: 1px solid black; }
+        button { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Draw Your Equation</h1>
+    <canvas id="canvas" width="400" height="200"></canvas>
+    <br>
+    <button onclick="solveEquation()">Solve</button>
+    <p id="result"></p>
+
+    <script>
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+        let drawing = false;
+
+        canvas.addEventListener("mousedown", () => drawing = true);
+        canvas.addEventListener("mouseup", () => {
+            drawing = false;
+            ctx.beginPath();
+        });
+        canvas.addEventListener("mousemove", draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = "black";
+            ctx.lineTo(event.offsetX, event.offsetY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.offsetX, event.offsetY);
+        }
+
+        function solveEquation() {
+            canvas.toBlob(blob => {
+                let formData = new FormData();
+                formData.append("file", blob, "canvas.png");
+
+                fetch("http://127.0.0.1:8000/solve", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerText = `Equation: ${data.equation} \n Solution: ${data.solution}`;
+                })
+                .catch(error => console.error("Error:", error));
+            });
+        }
+    </script>
+</body>
+</html>

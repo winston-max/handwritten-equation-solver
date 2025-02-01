@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equation Solver</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Handwritten Equation Solver</h1>
+        <canvas id="canvas" width="800" height="400"></canvas>
+        <div class="buttons">
+            <button id="clear">Clear</button>
+            <button id="solve">Solve</button>
+        </div>
+        <div id="result">
+            <p><strong>Equation:</strong> <span id="equation"></span></p>
+            <p><strong>Solution:</strong> <span id="solution"></span></p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

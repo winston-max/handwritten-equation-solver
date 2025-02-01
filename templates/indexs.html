@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Equation Solver</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styless.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Quadratic Equation Solver</h1>
+        <div class="canvas-container">
+            <canvas id="canvas" width="1200" height="600"></canvas>
+        </div>
+        <div class="buttons">
+            <button id="clear">Clear Canvas</button>
+            <button id="solve">Solve Equation</button>
+        </div>
+        <div id="result">
+            <p><strong>Equation:</strong> <span id="equation"></span></p>
+            <p><strong>Solution:</strong> <span id="solution"></span></p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
