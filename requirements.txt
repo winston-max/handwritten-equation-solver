@@ -88,7 +88,6 @@ python-dateutil==2.9.0.post0
 python-lsp-jsonrpc==1.1.2
 python-lsp-server==1.12.0
 python-multipart==0.0.20
-pywin32==308
 pyzmq==26.2.1
 referencing==0.36.2
 requests==2.32.3
