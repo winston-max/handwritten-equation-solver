@@ -2,6 +2,8 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const clearButton = document.getElementById('clear');
 const solveButton = document.getElementById('solve');
+const uploadButton = document.getElementById('uploadButton');
+const uploadInput = document.getElementById('upload');
 const equationDisplay = document.getElementById('equation');
 const solutionDisplay = document.getElementById('solution');
 
@@ -62,6 +64,28 @@ clearButton.addEventListener('click', () => {
 // Solve equation
 solveButton.addEventListener('click', solveEquation);
 
+// Upload image
+uploadButton.addEventListener('click', () => {
+    uploadInput.click();
+});
+
+uploadInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                solveEquation();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
 function solveEquation() {
     const image = canvas.toDataURL();
     fetch('/solve', {
@@ -73,9 +97,9 @@ function solveEquation() {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.solution.startsWith('Error:')) {
+        if (data.error) {
             equationDisplay.textContent = 'Invalid Equation';
-            solutionDisplay.textContent = data.solution;
+            solutionDisplay.textContent = data.error;
         } else {
             equationDisplay.textContent = data.equation;
             solutionDisplay.textContent = data.solution;
@@ -87,4 +111,3 @@ function solveEquation() {
         solutionDisplay.textContent = 'Failed to solve the equation.';
     });
 }
-
