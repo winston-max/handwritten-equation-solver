@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import cv2
 import numpy as np
 from tensorflow.keras.models import model_from_json
-from sympy import symbols, Eq, sympify, SympifyError
+from sympy import symbols, Eq, sympify, SympifyError, I, re, im
 from sympy import solve as sympy_solve
 from PIL import Image
 import base64
@@ -30,7 +30,7 @@ def load_model():
         return None
 
 model = load_model()
-labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'x']
+labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'x', 'i']  # Added 'i' for imaginary unit
 
 # Function to predict from an array
 def predictFromArray(arr):
@@ -92,8 +92,11 @@ class Solver:
             # Debugging: Check SymPy equation format
             print("Parsed SymPy Equation:", sympy_eq)
 
-            roots = sympy_solve(sympy_eq, x)  # Explicitly use SymPy's solve
-            return roots
+            # Solve the equation (including complex roots)
+            roots = sympy_solve(sympy_eq, x, dict=True)  # Get roots as a list of dictionaries
+            simplified_roots = [root[x] for root in roots]  # Extract roots from dictionaries
+
+            return simplified_roots
 
         except SympifyError as e:
             logging.error(f"SymPy could not parse the equation: {e}")
@@ -197,11 +200,19 @@ def solve():
         if roots is None:
             return jsonify({'error': 'Failed to solve the equation'})
 
-        st = []
-        for i in roots:
-            i = str(i)
-            st.append(i)
-        str1 = ', '.join(st)
+        # Format roots (only add imaginary part if it's non-zero)
+        formatted_roots = []
+        for root in roots:
+            real_part = re(root)
+            imag_part = im(root)
+            if imag_part == 0:
+                # Real root
+                formatted_roots.append(str(real_part))
+            else:
+                # Complex root
+                formatted_roots.append(f"{real_part} + {imag_part}i")
+
+        str1 = ', '.join(formatted_roots)
 
         return jsonify({'equation': equ, 'solution': str1})
     except Exception as e:
